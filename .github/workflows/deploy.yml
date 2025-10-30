@@ -62,6 +62,13 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_BACKEND }} --query taskDefinition > task-definition-backend.json
       
+      # *** PASSO DE CORREÇÃO RE-ADICIONADO ***
+      # Limpa o ficheiro JSON de chaves que a API não aceita
+      - name: Clean backend task definition file
+        run: |
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .enableFaultInjection)' task-definition-backend.json > new-task-def-backend.json
+          mv new-task-def-backend.json task-definition-backend.json
+
       - name: Inject DATABASE_URL secret into task definition
         # Este comando 'jq' edita o JSON da task, encontra o contentor certo, e insere a variável de ambiente
         run: |
@@ -89,6 +96,13 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_FRONTEND }} --query taskDefinition > task-definition-frontend.json
       
+      # *** PASSO DE CORREÇÃO RE-ADICIONADO ***
+      # Limpa o ficheiro JSON de chaves que a API não aceita
+      - name: Clean frontend task definition file
+        run: |
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .enableFaultInjection)' task-definition-frontend.json > new-task-def-frontend.json
+          mv new-task-def-frontend.json task-definition-frontend.json
+
       - name: Fill new image in frontend task definition
         id: task-def-frontend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -104,3 +118,4 @@ jobs:
           service: ${{ env.ECS_SERVICE_FRONTEND }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
