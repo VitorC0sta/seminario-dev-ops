@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import './App.css';
+
+
+const BACKEND_URL = 'http://34.22.11.44:8080';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [backendMessage, setBackendMessage] = useState('Carregando...');
+  const [dbMessage, setDbMessage] = useState('Testando DB...');
+
+  useEffect(() => {
+    // 1. Testa o endpoint /
+    fetch(BACKEND_URL + '/')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.text();
+      })
+      .then(text => setBackendMessage(text))
+      .catch(err => setBackendMessage(`Erro ao conectar no backend: ${err.message}`));
+
+    // 2. Testa o endpoint /test-db
+    fetch(BACKEND_URL + '/test-db')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data.message.includes('SUCESSO')) {
+          setDbMessage(`Sucesso! Hora do banco: ${data.db_time}`);
+        } else {
+          setDbMessage(`Falha: ${data.message}`);
+        }
+      })
+      .catch(err => setDbMessage(`Erro ao chamar /test-db: ${err.message}`));
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <div className="App">
+      <header className="App-header">
+        <h1>Meu App de Seminário DevOps (v1.1)</h1>
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+          <strong>Status do Backend:</strong> {backendMessage}
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        <p>
+          <strong>Status do Banco (RDS):</strong> {dbMessage}
+        </p>
+      </header>
+    </div>
+  );
 }
 
-export default App
+export default App;
