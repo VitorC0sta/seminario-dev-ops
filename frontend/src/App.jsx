@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-
-const BACKEND_URL = 'backend-alb-437047329.us-east-1.elb.amazonaws.com';
+const BACKEND_URL = 'http://backend-alb-437047329.us-east-1.elb.amazonaws.com';
 
 function App() {
   const [backendMessage, setBackendMessage] = useState('Carregando...');
