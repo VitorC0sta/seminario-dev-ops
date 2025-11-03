@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css'; 
 
-const BACKEND_URL = 'http://localhost:8080'; 
-//const BACKEND_URL = 'http://backend-alb-437047329.us-east-1.elb.amazonaws.com'; 
+//const BACKEND_URL = 'http://localhost:8080'; 
+const BACKEND_URL = 'http://backend-alb-437047329.us-east-1.elb.amazonaws.com'; 
 
 const StatusIndicator = ({ status }) => {
   const getStatusClass = () => {
