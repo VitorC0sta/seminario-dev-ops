@@ -1,21 +1,14 @@
-// server.js
-
-require('dotenv').config(); 
-
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 
-
 const app = express();
-app.use(cors()); 
-app.use(express.json()); 
+app.use(cors());
+app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
 
-// 4. Configuração do Banco (futuro RDS)
-// O 'dotenv' vai carregar o DATABASE_URL do seu .env local
-// O pipeline do ECS vai injetar essa variável em produção
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -23,15 +16,14 @@ const pool = new Pool({
   }
 });
 
+
 app.get('/', (req, res) => {
-  res.send('Meu Backend está VIVO!');
+  res.send('Meu Backend está VIVO! (v1.4)');
 });
 
-// Rota 2: "Teste de DB" (para provar que conectou no RDS)
 app.get('/test-db', async (req, res) => {
   try {
     const client = await pool.connect();
-    // Tenta pegar a hora atual do banco de dados
     const result = await client.query('SELECT NOW()');
     res.json({
       message: 'Conexão com RDS foi um SUCESSO!',
@@ -46,7 +38,24 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
-// 6. Iniciar Servidor
+app.get('/api/tecnologias', (req, res) => {
+  const tecnologias = [
+    { id: 1, nome: "React (Vite)" },
+    { id: 2, nome: "Node.js (Express)" },
+    { id: 3, nome: "Docker" },
+    { id: 4, nome: "GitHub Actions (CI/CD)" },
+    { id: 5, nome: "Amazon RDS (PostgreSQL)" },
+    { id: 6, nome: "Amazon ECS + Fargate" },
+    { id: 7, nome: "Amazon ECR" },
+    { id: 8, nome: "Amazon ALB" }
+  ];
+  
+  setTimeout(() => {
+    res.json(tecnologias);
+  }, 500);
+});
+
+
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor v1.3 rodando na porta ${PORT}`);
 });

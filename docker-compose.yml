@@ -1,11 +1,9 @@
-# Define a versão do Docker Compose
 version: "3.8"
 
 # Define os "serviços" (contêineres) que queremos rodar
 services:
   # --- O Serviço do Backend ---
   backend:
-    # Diz ao compose para "buildar" a imagem
     build:
       # A partir do contexto (pasta) ./backend
       context: ./backend
@@ -15,10 +13,6 @@ services:
     # para a porta 8080 do contêiner (que o server.js usa)
     ports:
       - "8080:8080"
-    # *** A PARTE MAIS IMPORTANTE ***
-    # Injeta as variáveis de ambiente do seu .env local
-    # diretamente no contêiner. É assim que ele vai
-    # encontrar a string do seu RDS!
     env_file:
       - ./backend/.env
     # Renicia o contêiner automaticamente se ele falhar
@@ -34,8 +28,6 @@ services:
     # para a porta 80 do contêiner (que o Nginx usa)
     ports:
       - "5173:80"
-    # Garante que o frontend só inicie DEPOIS que o
-    # backend já estiver (provavelmente) rodando
     depends_on:
       - backend
     restart: always
